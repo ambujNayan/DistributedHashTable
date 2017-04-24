@@ -12,8 +12,8 @@ struct NodeInfo
 service AddService 
 {
    NodeInfo getNodeInfo(),
-   string lookup(i32 key),
-   bool insert(i32 key, string meaning),
+   string lookup(i32 key, bool trace),
+   bool insert(i32 key, string meaning, bool trace),
    i32 find_successor(i32 id),
    NodeInfo find_predecessor(i32 id),
    NodeInfo closest_preceding_finger(i32 id),

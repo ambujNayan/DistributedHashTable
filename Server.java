@@ -62,7 +62,6 @@ public class Server
       if(no==0)
       {
         handler.join(null);
-        handler.printFingerTable();
       }
       else
       {
@@ -75,7 +74,6 @@ public class Server
           AddService.Client clientZ=new AddService.Client(protocol);
           NodeInfo nPrime=clientZ.getNodeInfo();
           handler.join(nPrime);
-          handler.printFingerTable();
           transport.close();
         } 
         catch (TException x) 

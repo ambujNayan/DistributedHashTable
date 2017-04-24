@@ -36,9 +36,9 @@ public class AddService {
 
     public NodeInfo getNodeInfo() throws org.apache.thrift.TException;
 
-    public String lookup(int key) throws org.apache.thrift.TException;
+    public String lookup(int key, boolean trace) throws org.apache.thrift.TException;
 
-    public boolean insert(int key, String meaning) throws org.apache.thrift.TException;
+    public boolean insert(int key, String meaning, boolean trace) throws org.apache.thrift.TException;
 
     public int find_successor(int id) throws org.apache.thrift.TException;
 
@@ -64,9 +64,9 @@ public class AddService {
 
     public void getNodeInfo(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void lookup(int key, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void lookup(int key, boolean trace, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void insert(int key, String meaning, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void insert(int key, String meaning, boolean trace, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void find_successor(int id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -130,16 +130,17 @@ public class AddService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getNodeInfo failed: unknown result");
     }
 
-    public String lookup(int key) throws org.apache.thrift.TException
+    public String lookup(int key, boolean trace) throws org.apache.thrift.TException
     {
-      send_lookup(key);
+      send_lookup(key, trace);
       return recv_lookup();
     }
 
-    public void send_lookup(int key) throws org.apache.thrift.TException
+    public void send_lookup(int key, boolean trace) throws org.apache.thrift.TException
     {
       lookup_args args = new lookup_args();
       args.setKey(key);
+      args.setTrace(trace);
       sendBase("lookup", args);
     }
 
@@ -153,17 +154,18 @@ public class AddService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "lookup failed: unknown result");
     }
 
-    public boolean insert(int key, String meaning) throws org.apache.thrift.TException
+    public boolean insert(int key, String meaning, boolean trace) throws org.apache.thrift.TException
     {
-      send_insert(key, meaning);
+      send_insert(key, meaning, trace);
       return recv_insert();
     }
 
-    public void send_insert(int key, String meaning) throws org.apache.thrift.TException
+    public void send_insert(int key, String meaning, boolean trace) throws org.apache.thrift.TException
     {
       insert_args args = new insert_args();
       args.setKey(key);
       args.setMeaning(meaning);
+      args.setTrace(trace);
       sendBase("insert", args);
     }
 
@@ -412,24 +414,27 @@ public class AddService {
       }
     }
 
-    public void lookup(int key, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void lookup(int key, boolean trace, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      lookup_call method_call = new lookup_call(key, resultHandler, this, ___protocolFactory, ___transport);
+      lookup_call method_call = new lookup_call(key, trace, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class lookup_call extends org.apache.thrift.async.TAsyncMethodCall {
       private int key;
-      public lookup_call(int key, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private boolean trace;
+      public lookup_call(int key, boolean trace, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
+        this.trace = trace;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("lookup", org.apache.thrift.protocol.TMessageType.CALL, 0));
         lookup_args args = new lookup_args();
         args.setKey(key);
+        args.setTrace(trace);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -444,9 +449,9 @@ public class AddService {
       }
     }
 
-    public void insert(int key, String meaning, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void insert(int key, String meaning, boolean trace, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      insert_call method_call = new insert_call(key, meaning, resultHandler, this, ___protocolFactory, ___transport);
+      insert_call method_call = new insert_call(key, meaning, trace, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -454,10 +459,12 @@ public class AddService {
     public static class insert_call extends org.apache.thrift.async.TAsyncMethodCall {
       private int key;
       private String meaning;
-      public insert_call(int key, String meaning, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private boolean trace;
+      public insert_call(int key, String meaning, boolean trace, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
         this.meaning = meaning;
+        this.trace = trace;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -465,6 +472,7 @@ public class AddService {
         insert_args args = new insert_args();
         args.setKey(key);
         args.setMeaning(meaning);
+        args.setTrace(trace);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -827,7 +835,7 @@ public class AddService {
 
       public lookup_result getResult(I iface, lookup_args args) throws org.apache.thrift.TException {
         lookup_result result = new lookup_result();
-        result.success = iface.lookup(args.key);
+        result.success = iface.lookup(args.key, args.trace);
         return result;
       }
     }
@@ -847,7 +855,7 @@ public class AddService {
 
       public insert_result getResult(I iface, insert_args args) throws org.apache.thrift.TException {
         insert_result result = new insert_result();
-        result.success = iface.insert(args.key, args.meaning);
+        result.success = iface.insert(args.key, args.meaning, args.trace);
         result.setSuccessIsSet(true);
         return result;
       }
@@ -1160,7 +1168,7 @@ public class AddService {
       }
 
       public void start(I iface, lookup_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.lookup(args.key,resultHandler);
+        iface.lookup(args.key, args.trace,resultHandler);
       }
     }
 
@@ -1212,7 +1220,7 @@ public class AddService {
       }
 
       public void start(I iface, insert_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.insert(args.key, args.meaning,resultHandler);
+        iface.insert(args.key, args.meaning, args.trace,resultHandler);
       }
     }
 
@@ -2281,6 +2289,7 @@ public class AddService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("lookup_args");
 
     private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)-1);
+    private static final org.apache.thrift.protocol.TField TRACE_FIELD_DESC = new org.apache.thrift.protocol.TField("trace", org.apache.thrift.protocol.TType.BOOL, (short)-2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2289,10 +2298,12 @@ public class AddService {
     }
 
     public int key; // required
+    public boolean trace; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      KEY((short)-1, "key");
+      KEY((short)-1, "key"),
+      TRACE((short)-2, "trace");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2309,6 +2320,8 @@ public class AddService {
         switch(fieldId) {
           case -1: // KEY
             return KEY;
+          case -2: // TRACE
+            return TRACE;
           default:
             return null;
         }
@@ -2350,12 +2363,15 @@ public class AddService {
 
     // isset id assignments
     private static final int __KEY_ISSET_ID = 0;
+    private static final int __TRACE_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.TRACE, new org.apache.thrift.meta_data.FieldMetaData("trace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(lookup_args.class, metaDataMap);
     }
@@ -2364,11 +2380,14 @@ public class AddService {
     }
 
     public lookup_args(
-      int key)
+      int key,
+      boolean trace)
     {
       this();
       this.key = key;
       setKeyIsSet(true);
+      this.trace = trace;
+      setTraceIsSet(true);
     }
 
     /**
@@ -2377,6 +2396,7 @@ public class AddService {
     public lookup_args(lookup_args other) {
       __isset_bitfield = other.__isset_bitfield;
       this.key = other.key;
+      this.trace = other.trace;
     }
 
     public lookup_args deepCopy() {
@@ -2387,6 +2407,8 @@ public class AddService {
     public void clear() {
       setKeyIsSet(false);
       this.key = 0;
+      setTraceIsSet(false);
+      this.trace = false;
     }
 
     public int getKey() {
@@ -2412,6 +2434,29 @@ public class AddService {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __KEY_ISSET_ID, value);
     }
 
+    public boolean isTrace() {
+      return this.trace;
+    }
+
+    public lookup_args setTrace(boolean trace) {
+      this.trace = trace;
+      setTraceIsSet(true);
+      return this;
+    }
+
+    public void unsetTrace() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __TRACE_ISSET_ID);
+    }
+
+    /** Returns true if field trace is set (has been assigned a value) and false otherwise */
+    public boolean isSetTrace() {
+      return EncodingUtils.testBit(__isset_bitfield, __TRACE_ISSET_ID);
+    }
+
+    public void setTraceIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __TRACE_ISSET_ID, value);
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case KEY:
@@ -2422,6 +2467,14 @@ public class AddService {
         }
         break;
 
+      case TRACE:
+        if (value == null) {
+          unsetTrace();
+        } else {
+          setTrace((Boolean)value);
+        }
+        break;
+
       }
     }
 
@@ -2429,6 +2482,9 @@ public class AddService {
       switch (field) {
       case KEY:
         return Integer.valueOf(getKey());
+
+      case TRACE:
+        return Boolean.valueOf(isTrace());
 
       }
       throw new IllegalStateException();
@@ -2443,6 +2499,8 @@ public class AddService {
       switch (field) {
       case KEY:
         return isSetKey();
+      case TRACE:
+        return isSetTrace();
       }
       throw new IllegalStateException();
     }
@@ -2466,6 +2524,15 @@ public class AddService {
         if (!(this_present_key && that_present_key))
           return false;
         if (this.key != that.key)
+          return false;
+      }
+
+      boolean this_present_trace = true;
+      boolean that_present_trace = true;
+      if (this_present_trace || that_present_trace) {
+        if (!(this_present_trace && that_present_trace))
+          return false;
+        if (this.trace != that.trace)
           return false;
       }
 
@@ -2495,6 +2562,16 @@ public class AddService {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetTrace()).compareTo(other.isSetTrace());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetTrace()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.trace, other.trace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -2517,6 +2594,10 @@ public class AddService {
 
       sb.append("key:");
       sb.append(this.key);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("trace:");
+      sb.append(this.trace);
       first = false;
       sb.append(")");
       return sb.toString();
@@ -2571,6 +2652,14 @@ public class AddService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case -2: // TRACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.trace = iprot.readBool();
+                struct.setTraceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2586,6 +2675,9 @@ public class AddService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldBegin(TRACE_FIELD_DESC);
+        oprot.writeBool(struct.trace);
+        oprot.writeFieldEnd();
         oprot.writeFieldBegin(KEY_FIELD_DESC);
         oprot.writeI32(struct.key);
         oprot.writeFieldEnd();
@@ -2610,19 +2702,29 @@ public class AddService {
         if (struct.isSetKey()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetTrace()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetKey()) {
           oprot.writeI32(struct.key);
+        }
+        if (struct.isSetTrace()) {
+          oprot.writeBool(struct.trace);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, lookup_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.key = iprot.readI32();
           struct.setKeyIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.trace = iprot.readBool();
+          struct.setTraceIsSet(true);
         }
       }
     }
@@ -2988,6 +3090,7 @@ public class AddService {
 
     private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)-1);
     private static final org.apache.thrift.protocol.TField MEANING_FIELD_DESC = new org.apache.thrift.protocol.TField("meaning", org.apache.thrift.protocol.TType.STRING, (short)-2);
+    private static final org.apache.thrift.protocol.TField TRACE_FIELD_DESC = new org.apache.thrift.protocol.TField("trace", org.apache.thrift.protocol.TType.BOOL, (short)-3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2997,11 +3100,13 @@ public class AddService {
 
     public int key; // required
     public String meaning; // required
+    public boolean trace; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       KEY((short)-1, "key"),
-      MEANING((short)-2, "meaning");
+      MEANING((short)-2, "meaning"),
+      TRACE((short)-3, "trace");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3020,6 +3125,8 @@ public class AddService {
             return KEY;
           case -2: // MEANING
             return MEANING;
+          case -3: // TRACE
+            return TRACE;
           default:
             return null;
         }
@@ -3061,6 +3168,7 @@ public class AddService {
 
     // isset id assignments
     private static final int __KEY_ISSET_ID = 0;
+    private static final int __TRACE_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
@@ -3069,6 +3177,8 @@ public class AddService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.MEANING, new org.apache.thrift.meta_data.FieldMetaData("meaning", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.TRACE, new org.apache.thrift.meta_data.FieldMetaData("trace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(insert_args.class, metaDataMap);
     }
@@ -3078,12 +3188,15 @@ public class AddService {
 
     public insert_args(
       int key,
-      String meaning)
+      String meaning,
+      boolean trace)
     {
       this();
       this.key = key;
       setKeyIsSet(true);
       this.meaning = meaning;
+      this.trace = trace;
+      setTraceIsSet(true);
     }
 
     /**
@@ -3095,6 +3208,7 @@ public class AddService {
       if (other.isSetMeaning()) {
         this.meaning = other.meaning;
       }
+      this.trace = other.trace;
     }
 
     public insert_args deepCopy() {
@@ -3106,6 +3220,8 @@ public class AddService {
       setKeyIsSet(false);
       this.key = 0;
       this.meaning = null;
+      setTraceIsSet(false);
+      this.trace = false;
     }
 
     public int getKey() {
@@ -3155,6 +3271,29 @@ public class AddService {
       }
     }
 
+    public boolean isTrace() {
+      return this.trace;
+    }
+
+    public insert_args setTrace(boolean trace) {
+      this.trace = trace;
+      setTraceIsSet(true);
+      return this;
+    }
+
+    public void unsetTrace() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __TRACE_ISSET_ID);
+    }
+
+    /** Returns true if field trace is set (has been assigned a value) and false otherwise */
+    public boolean isSetTrace() {
+      return EncodingUtils.testBit(__isset_bitfield, __TRACE_ISSET_ID);
+    }
+
+    public void setTraceIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __TRACE_ISSET_ID, value);
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case KEY:
@@ -3173,6 +3312,14 @@ public class AddService {
         }
         break;
 
+      case TRACE:
+        if (value == null) {
+          unsetTrace();
+        } else {
+          setTrace((Boolean)value);
+        }
+        break;
+
       }
     }
 
@@ -3183,6 +3330,9 @@ public class AddService {
 
       case MEANING:
         return getMeaning();
+
+      case TRACE:
+        return Boolean.valueOf(isTrace());
 
       }
       throw new IllegalStateException();
@@ -3199,6 +3349,8 @@ public class AddService {
         return isSetKey();
       case MEANING:
         return isSetMeaning();
+      case TRACE:
+        return isSetTrace();
       }
       throw new IllegalStateException();
     }
@@ -3231,6 +3383,15 @@ public class AddService {
         if (!(this_present_meaning && that_present_meaning))
           return false;
         if (!this.meaning.equals(that.meaning))
+          return false;
+      }
+
+      boolean this_present_trace = true;
+      boolean that_present_trace = true;
+      if (this_present_trace || that_present_trace) {
+        if (!(this_present_trace && that_present_trace))
+          return false;
+        if (this.trace != that.trace)
           return false;
       }
 
@@ -3270,6 +3431,16 @@ public class AddService {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetTrace()).compareTo(other.isSetTrace());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetTrace()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.trace, other.trace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -3300,6 +3471,10 @@ public class AddService {
       } else {
         sb.append(this.meaning);
       }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("trace:");
+      sb.append(this.trace);
       first = false;
       sb.append(")");
       return sb.toString();
@@ -3362,6 +3537,14 @@ public class AddService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case -3: // TRACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.trace = iprot.readBool();
+                struct.setTraceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3377,6 +3560,9 @@ public class AddService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldBegin(TRACE_FIELD_DESC);
+        oprot.writeBool(struct.trace);
+        oprot.writeFieldEnd();
         if (struct.meaning != null) {
           oprot.writeFieldBegin(MEANING_FIELD_DESC);
           oprot.writeString(struct.meaning);
@@ -3409,19 +3595,25 @@ public class AddService {
         if (struct.isSetMeaning()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetTrace()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetKey()) {
           oprot.writeI32(struct.key);
         }
         if (struct.isSetMeaning()) {
           oprot.writeString(struct.meaning);
         }
+        if (struct.isSetTrace()) {
+          oprot.writeBool(struct.trace);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, insert_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.key = iprot.readI32();
           struct.setKeyIsSet(true);
@@ -3429,6 +3621,10 @@ public class AddService {
         if (incoming.get(1)) {
           struct.meaning = iprot.readString();
           struct.setMeaningIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.trace = iprot.readBool();
+          struct.setTraceIsSet(true);
         }
       }
     }

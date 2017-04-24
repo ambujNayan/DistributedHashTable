@@ -23,16 +23,21 @@ public class Client
 {
 	public static void main(String[] args) throws IOException
 	{
-		System.out.println("CLIENT STARTED !");
+		boolean trace=false;
+		System.out.println("QUERY CLIENT STARTED !");
 
 		String someChordNodeURL=args[0];
 		String[] hostPortPair=someChordNodeURL.split(",");
 		String host=hostPortPair[0];
 		int port=Integer.parseInt(hostPortPair[1]);
 
-		// Displays - to be removed
-		System.out.println("Host: "+host);
-		System.out.println("Port: "+port);
+		Scanner in=new Scanner(System.in);
+		System.out.println("Do you want trace to be on for LOOKUP operation? Enter Y/N: ");
+		String response=in.next();
+		if(response.equals("Y"))
+		{
+			trace=true;
+		}
 
 		try 
 	  	{
@@ -41,139 +46,16 @@ public class Client
 	       transport.open();
 	       TProtocol protocol= new TBinaryProtocol(transport);
 	       AddService.Client client=new AddService.Client(protocol);
-	       findWord(client, host);
+	       findWord(client, host, trace);
 	       transport.close();
 	  	} 
 	  	catch (TException x) 
 	  	{
 		   x.printStackTrace();
 	  	}
-
-	  	System.out.println("ISSUING PRINT COMMAND \n");
-
-	  	try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9000);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
-		try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9100);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
-		try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9200);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
-		try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9300);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
-		try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9400);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
-		try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9500);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
-		try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9600);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
-		try 
-		{
-		    TTransport transport; 
-		    transport=new TSocket(host, 9700);
-		    transport.open();
-		    TProtocol protocol= new TBinaryProtocol(transport);
-		    AddService.Client client=new AddService.Client(protocol);
-		    client.printFingerTable();
-		    transport.close();
-		} 
-		catch (TException x) 
-		{
-		   x.printStackTrace();
-		}
-
 	}
 
-	private static void findWord(AddService.Client client, String host) throws TException
+	private static void findWord(AddService.Client client, String host, boolean trace) throws TException
 	{
 		Scanner in=new Scanner(System.in);
 		System.out.println("Enter 1 to lookup, 2 to exit: ");
@@ -187,7 +69,7 @@ public class Client
 			int hashCode=word.hashCode();
 			if(hashCode<0)
 				hashCode=hashCode>>>1;	
-			hashCode=hashCode%1024;		
+		
 			try 
 	  		{
 				int nodePort=client.find_successor(hashCode);			
@@ -196,7 +78,7 @@ public class Client
 	       		transport.open();
 			    TProtocol protocol= new TBinaryProtocol(transport);
 			    AddService.Client secondaryClient=new AddService.Client(protocol);
-			    lookupWord(secondaryClient, hashCode);
+			    lookupWord(secondaryClient, hashCode, trace);
 			    transport.close();
 	  		} 
 	  		catch (TException x) 
@@ -210,10 +92,9 @@ public class Client
 		}
 	}
 
-	private static void lookupWord(AddService.Client secondaryClient, int key) throws TException
+	private static void lookupWord(AddService.Client secondaryClient, int key, boolean trace) throws TException
 	{
-		String meaning=secondaryClient.lookup(key);
-		// Displays - to be removed
+		String meaning=secondaryClient.lookup(key, trace);
 		System.out.println("Result: "+meaning);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.Date;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -22,58 +23,104 @@ public class Node implements AddService.Iface
 	private FingerTableObject[] fingerTable;
 	private Hashtable<Integer, String> dictionary;
 	private PrintWriter fw;
+	private PrintWriter tw;
+	private boolean trace;
 
 	public Node(String ipAddress, int port)
 	{
-		
 		int hashCode=(ipAddress+port).hashCode();
-		System.out.println("hashCode: "+hashCode);
-		//hashCode = (int) Math.abs(hashCode);
-		//System.out.println("After applying Math.abs: "+hashCode);
 		if(hashCode<0)
 			hashCode=hashCode>>>1;
-		//hashCode=hashCode%1024;
-		//*/
 
 		n=new NodeInfo(hashCode, ipAddress, port, "localhost", -1, "localhost", -1);
 		
 		fingerTable=new FingerTableObject[32];
 		dictionary=new Hashtable<Integer, String>();
+		trace=false;
+
+		try 
+		{
+			fw=new PrintWriter("STRUCTURE_OF_DHT_AT_PORT_"+n.getPort()+".txt");
+			tw=new PrintWriter("TRACE_FILE_AT_PORT_"+n.getPort()+".txt");
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void printFingerTable()
 	{
-		System.out.println("FINGER TABLE PRINT: ");
-		System.out.println("Local Port: "+n.getPort());
-		System.out.println("n.getId(): "+n.getId());
-		System.out.println("n.getSuccPort(): "+n.getSuccPort());
-		System.out.println("n.getPredPort(): "+n.getPredPort());
+		fw.append("PRINTING THE STRUCTURE OF DISTRIBUTED HASH TABLE: \n");
+		fw.flush();
+		fw.append("NODE ID: "+n.getId()+"\n");
+		fw.flush();
+		fw.append("NODE KEY (same as NODE ID): "+n.getId()+"\n");
+		fw.flush();
+		fw.append("NODE PORT: "+n.getPort()+"\n");
+		fw.flush();
+		fw.append("PORT OF NODE's SUCCESSOR: "+n.getSuccPort()+"\n");
+		fw.flush();
+		fw.append("PORT OF NODE's PREDECESSOR: "+n.getPredPort()+"\n");
+		fw.flush();
+		fw.append("NUMBER OF ENTRIES STORED AT THIS NODE: "+dictionary.size()+"\n");
+		fw.flush();
+		fw.append("\nFINGER TABLE: \n");
+		fw.flush();
+
 		for(int i=0; i<m; i++)
 		{
-			System.out.println("INDEX: "+(i+1)+" START: "+fingerTable[i].getStart()+" NODE: "+fingerTable[i].getNodeInfo().getPort());
+			fw.append("\n START: "+fingerTable[i].getStart()+" NODE's ID: "+fingerTable[i].getNodeInfo().getId()+" NODE's PORT: "+fingerTable[i].getNodeInfo().getPort()+"\n");
+			fw.flush();
 		}
 	}
 
 	public  NodeInfo getNodeInfo()
 	{
+		if(this.trace)
+		{
+			tw.append("\nExecution of getNodeInfo() at "+new Date());
+			tw.flush();
+		}
+		
 		return n;
 	}
 
 	public void setPredecessor(int predPort)
 	{
+		if(this.trace)
+		{
+			tw.append("\nExecution of setPredecessor() at "+new Date());
+			tw.flush();
+		}
+		
 		n.setPredPort(predPort);
 	}
 
-	public  String lookup(int key)
+	public  String lookup(int key, boolean trace)
 	{
+		this.trace=trace;		
+		if(this.trace)
+		{
+			tw.append("\nExecution of lookup() at "+new Date());
+			tw.flush();
+		}
+
 		if(dictionary.containsKey(key))
 			return dictionary.get(key);
 		else
 			return "NOT FOUND";
 	}
 
-	public  boolean insert(int key, String meaning)
+	public  boolean insert(int key, String meaning, boolean trace)
 	{
+		this.trace=trace;
+		if(this.trace)
+		{
+			tw.append("\nExecution of insert() at "+new Date());
+			tw.flush();
+		}
+
 		if(dictionary.containsKey(key))
 			return false;
 		else
@@ -88,12 +135,24 @@ public class Node implements AddService.Iface
 	// OP: NodeInfo (has id, host, port, successor, predecessor)
 	public  int find_successor(int id) throws org.apache.thrift.TException
 	{
+		if(this.trace)
+		{
+			tw.append("\nExecution of find_successor() at "+new Date());
+			tw.flush();
+		}
+
 		NodeInfo nPrime=find_predecessor(id);
 		return nPrime.getSuccPort();
 	}
 
 	public  int getSuccId(NodeInfo nPrime)
 	{
+		if(this.trace)
+		{
+			tw.append("\nExecution of getSuccId() at "+new Date());
+			tw.flush();
+		}
+
 		int succPort=nPrime.getSuccPort();
 
 		if(succPort==n.getPort())
@@ -127,6 +186,12 @@ public class Node implements AddService.Iface
 	// OP: NodeInfo (has id, host, port, successor, predecessor)
 	public  NodeInfo find_predecessor(int id)
 	{
+		if(this.trace)
+		{
+			tw.append("\nExecution of find_predecessor() at "+new Date());
+			tw.flush();
+		}
+
 		NodeInfo nPrime=n;
 		boolean loopCheck=false;
 
@@ -173,6 +238,12 @@ public class Node implements AddService.Iface
 	// OP: NodeInfo (has id, host, port, successor, predecessor)
 	public  NodeInfo closest_preceding_finger(int id)
 	{
+		if(this.trace)
+		{
+			tw.append("\nExecution of closest_preceding_finger() at "+new Date());
+			tw.flush();
+		}
+
 		for(int i=m-1; i>=0; i--)
 		{
 			if(n.getId()<id)
@@ -199,7 +270,12 @@ public class Node implements AddService.Iface
 	// node nPrime is an arbitrary node in the network
 	public  void join(NodeInfo nPrime) throws TException
 	{
-		System.out.println("JOINED THE NETWORK");
+		if(this.trace)
+		{
+			tw.append("\nExecution of join() at "+new Date());
+			tw.flush();
+		}
+
 		// if n is the only node in the network
 		if(nPrime==null)
 		{
@@ -220,15 +296,18 @@ public class Node implements AddService.Iface
 			update_others();
 			// Check if I have missed anything here
 		}
-
-		System.out.println("JOINED SUCCESSFULLY");
-
 	}
 
 	// initialize finger table of local node
 	// nPrime is arbitrary node already in the network
 	public  void init_finger_table(NodeInfo nPrime) throws TException
 	{
+		if(this.trace)
+		{
+			tw.append("\nExecution of init_finger_table() at "+new Date());
+			tw.flush();
+		}
+
 		for(int i=0; i<m; i++)
 		{
 			fingerTable[i] = new FingerTableObject((int)(((long)n.getId()+(long)Math.pow(2, i))%(long)Math.pow(2, 31)), null);
@@ -281,7 +360,6 @@ public class Node implements AddService.Iface
 			try 
 			{
 				TTransport transport; 
-				System.out.println("clientE will be connected to port: "+n.getSuccPort());
 				transport=new TSocket("localhost", n.getSuccPort());
 				transport.open();
 				TProtocol protocol= new TBinaryProtocol(transport);
@@ -424,30 +502,25 @@ public class Node implements AddService.Iface
 	// update all nodes whose finger tables should refer to n
 	public  void update_others()
 	{
-		System.out.println("--------------------------------------------------");
-		System.out.println("NODE: update_others()");
+		if(this.trace)
+		{
+			tw.append("\nExecution of update_others() at "+new Date());
+			tw.flush();
+		}
+
 		for(int i=0; i<m; i++)
 		{
-			System.out.println("update_others(): i: "+i);
 			long xx=n.getId();
 			long y=(long)Math.pow(2, i);
 			long z=(xx-y);
 			if(z<0)
 				z=((long) Math.pow(2, 32))+z;
-
-			System.out.println("n.getId(): "+xx);
-			System.out.println("(int)Math.pow(2, i)): "+y);
-			System.out.println("Trying to find predecessor of: "+z);
 			
 			NodeInfo p=null;
 			p=find_predecessor((int)z);
-			//p=find_predecessor(xx);
-			System.out.println("Predecessor of z is: "+p.getPort());
-			//System.out.println("Predecessor of xx is: "+p.getPort());
-
+			
 			if(n.getPort()==9100 && i==0)
 			{
-				System.out.println("Remote call of update_finger_table()");
 				try 
 				{
 					TTransport transport; 
@@ -468,7 +541,6 @@ public class Node implements AddService.Iface
 				if(p.getPort()!=n.getPort())
 				{
 					// remote call
-					System.out.println("Remote call of update_finger_table()");
 					try 
 					{
 						TTransport transport; 
@@ -486,28 +558,23 @@ public class Node implements AddService.Iface
 				}	
 			}
 		}
-		System.out.println("--------------------------------------------------");
 	}
 
 	// if s is the ith finger of n, update n's finger table with s
 	public void update_finger_table(NodeInfo s, int i)
 	{
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
-		System.out.println("Node: update_finger_table");
-		System.out.println("s.getPort(): "+s.getPort());
-		System.out.println("n.getPort(): "+n.getPort());
-		System.out.println("i: "+i);		
-		System.out.println("n.getId(): "+n.getId());
-		System.out.println("fingerTable[i].getNodeInfo().getId(): "+fingerTable[i].getNodeInfo().getId());
-			
+		if(this.trace)
+		{
+			tw.append("\nExecution of update_finger_table() at "+new Date());
+			tw.flush();
+		}
+
 		if(n.getPort()!=s.getPort())
 		{
 			if(n.getId()<fingerTable[i].getNodeInfo().getId())
 			{
-				System.out.println("IF-PART");
 				if(s.getId()>= n.getId() && s.getId()<fingerTable[i].getNodeInfo().getId())
 				{
-					System.out.println("Finger table got updated");
 					fingerTable[i].setNodeInfo(s);
 					if(i==0)
 					{
@@ -515,18 +582,11 @@ public class Node implements AddService.Iface
 					}	
 	
 					int predPort=n.getPredPort();
-					System.out.println("predPort: "+predPort);
-					System.out.println("n.getPort(): "+n.getPort());
-					
-					
-					//if(predPort!=n.getPort() && predPort!=s.getPort())
-					//{
 					if(predPort!=9100 && n.getPort()!=9000)
 					{
 						// remote call
 						try 
 						{
-							System.out.println("Calling remote call on port: "+predPort);
 							TTransport transport; 
 							transport=new TSocket("localhost", predPort);
 							transport.open();
@@ -544,10 +604,8 @@ public class Node implements AddService.Iface
 			}
 			else
 			{
-				System.out.println("ELSE-PART");
 				if((s.getId()>= n.getId() || s.getId()<fingerTable[i].getNodeInfo().getId()))
 				{
-					System.out.println("Finger table got updated");
 					fingerTable[i].setNodeInfo(s);
 					if(i==0)
 					{
@@ -555,17 +613,11 @@ public class Node implements AddService.Iface
 					}	
 					
 					int predPort=n.getPredPort();
-					System.out.println("predPort: "+predPort);
-					System.out.println("n.getPort(): "+n.getPort());
-					
-					//if(predPort!=n.getPort() && predPort!=s.getPort())
-					//{
 					if(predPort!=9100 && n.getPort()!=9000)
 					{
 						// remote call
 						try 
 						{
-							System.out.println("Calling remote call on prot: "+predPort);
 							TTransport transport; 
 							transport=new TSocket("localhost", predPort);
 							transport.open();
@@ -582,6 +634,5 @@ public class Node implements AddService.Iface
 				}
 			}	
 		}
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 }

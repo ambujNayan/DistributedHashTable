@@ -33,15 +33,20 @@ public class DictionaryLoader
 		String[] hostPortPair=someChordNodeURL.split(",");
 		String host=hostPortPair[0];
 		int port=Integer.parseInt(hostPortPair[1]);
-
-		// Displays - to be removed
-		System.out.println("Host: "+host);
-		System.out.println("Port: "+port);
+		boolean trace=false;
 
 		String dictionaryFilePath=args[1];
 		Scanner dictionaryFile = new Scanner(Paths.get(dictionaryFilePath));
 
 		int countOfOverWrittenWords=0;
+
+		Scanner in=new Scanner(System.in);
+		System.out.println("Do you want trace to be on for INSERT operation? Enter Y/N: ");
+		String response=in.next();
+		if(response.equals("Y"))
+		{
+			trace=true;
+		}
 
 		while(dictionaryFile.hasNextLine())
 		{
@@ -53,7 +58,6 @@ public class DictionaryLoader
 			int hashCode=word.hashCode();
 			if(hashCode<0)
 				hashCode=hashCode>>>1;
-			hashCode=hashCode%1024;
 
 			if(dictionary.containsKey(hashCode))
 			{
@@ -73,7 +77,7 @@ public class DictionaryLoader
 	       transport.open();
 	       TProtocol protocol= new TBinaryProtocol(transport);
 	       AddService.Client client=new AddService.Client(protocol);
-	       findNode(client, host, dictionary);
+	       findNode(client, host, dictionary, trace);
 	       transport.close();
 	  	} 
 	  	catch (TException x) 
@@ -82,7 +86,7 @@ public class DictionaryLoader
 	  	}
 	}
 
-	private static void findNode(AddService.Client client, String host, HashMap<Integer, String> dictionary) throws TException
+	private static void findNode(AddService.Client client, String host, HashMap<Integer, String> dictionary, boolean trace) throws TException
 	{
 		Iterator it=dictionary.entrySet().iterator();
 		while(it.hasNext())
@@ -98,7 +102,7 @@ public class DictionaryLoader
 	       		transport.open();
 			    TProtocol protocol= new TBinaryProtocol(transport);
 			    AddService.Client secondaryClient=new AddService.Client(protocol);
-			    secondaryClient.insert(pair.getKey(), pair.getValue());
+			    secondaryClient.insert(pair.getKey(), pair.getValue(), trace);
 			    transport.close();
 	  		} 
 	  		catch (TException x) 
